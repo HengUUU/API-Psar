@@ -1,0 +1,59 @@
+# version: "3.8"
+services:
+
+  mysql:
+    image: mysql:8.0
+    container_name: f2sdb
+    restart: always
+    ports:
+      - 4402:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: f2sDB
+      MYSQL_USER: user
+      MYSQL_PASSWORD: root
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - f2s
+      
+  phpmyadmin:
+    image: phpmyadmin
+    container_name : f2sphpadmin
+    restart: always
+    ports: 
+      - 8050:80
+    environment:
+      PMA_HOST: mysql  
+      PMA_USER: root
+      PMA_PASSWORD: root
+    depends_on:
+      - mysql
+    networks:
+      - f2s
+
+  # api:
+  #   container_name: api-f2s
+  #   restart: always
+  #   build:
+  #     context: ./api-v1/.
+  #     dockerfile: dockerfile
+  #   ports: 
+  #     - "90:2888"
+  #   environment:
+  #     DB_CONNECTION: mysql
+  #     DB_HOST: mysql
+  #     DB_PORT: 3306
+  #     DB_USERNAME: root
+  #     DB_PASSWORD: root
+  #     DB_DATABASE: f2sDB
+  #   networks:
+  #     - f2s
+    # volumes:
+      # - api/src:/myapp/src
+
+volumes:
+  mysql_data:  
+networks:
+  f2s:
